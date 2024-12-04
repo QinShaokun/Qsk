@@ -175,6 +175,11 @@ Soft_install_Anaconda() {
     wget --user-agent="Mozilla" https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2024.06-1-Linux-x86_64.sh
     bash Anaconda3-2024.06-1-Linux-x86_64.sh 
     gnome-terminal
+    #conda config --add channels  https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+    #conda config --add channels  https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+    #conda config --add channels  https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+    #conda config --add channels  https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro
+    #conda config --add channels  https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
     conda config --set auto_activate_base false   
     rm -rf Anaconda3-2024.06-1-Linux-x86_64.sh 
 }
@@ -190,6 +195,20 @@ Soft_install_Clion() {
     sudo snap install clion --classic
 }
 
+Soft_install_Zotero() {
+		wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+		sudo apt update
+		sudo apt install -y zotero
+}
+
+Soft_install_Unity(){
+	wget -qO - https://hub.unity3d.com/linux/keys/public | gpg --dearmor | sudo tee /usr/share/keyrings/Unity_Technologies_ApS.gpg > /dev/null
+	sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/Unity_Technologies_ApS.gpg] https://hub.unity3d.com/linux/repos/deb stable main" > /etc/apt/sources.list.d/unityhub.list'
+	sudo apt update
+	sudo apt-get install unityhub -y
+	sudo apt install libgconf-2-4 -y
+}
+
 
 #安装命令
 Soft_install() {
@@ -198,11 +217,13 @@ Soft_install() {
         clear
         echo "软件安装：请输入要安装的软件: "
         echo "1: 安装Edge浏览器"
-        echo "2: 安装google浏览器"
+        echo "2: 安装Google浏览器"
         echo "3: 安装VS Code"
         echo "4: 安装Anaconda"
-        echo "5: 安装pycharm"
-        echo "6: 安装clion"
+        echo "5: 安装Pycharm"
+        echo "6: 安装Clion"
+        echo "7: 安装Zotero"
+        echo "8: 安装Unity"
         echo "0: 退出"
         
         read -p "选择要执行的命令：" operation
@@ -218,7 +239,11 @@ Soft_install() {
         elif [ "$operation" -eq 5 ]; then 
             Soft_install_Pycharm 
         elif [ "$operation" -eq 6 ]; then 
-            Soft_install_Clion 
+            Soft_install_Clion
+        elif [ "$operation" -eq 7 ]; then 
+            Soft_install_Zotero
+        elif [ "$operation" -eq 8 ]; then 
+            Soft_install_Unity
         elif [ "$operation" -eq 0 ]; then  
             break
         else  
@@ -231,8 +256,8 @@ Soft_install() {
 Vim_Config_vimrc(){
     echo "
     \"显示管理
-    \"set number			\"设置绝对行号
-    set relativenumber	\"设置相对行号
+    set number			\"设置绝对行号
+    \"set relativenumber	\"设置相对行号
     syntax on			\"语法高亮
     set wrap			\"自动换行
     \"set cursorline		\"突出显示当前行
@@ -244,33 +269,120 @@ Vim_Config_vimrc(){
     set autoindent                  \" 设置自动缩进：即每行的缩进值与上一行相等；使用 noautoindent 取消设置
     set cindent                     \" 以C/C++的模式缩进
     set scrolloff=4                 \" 设定光标离窗口上下边界 4 行时窗口自动滚动
+    set mouse=a
+    set splitbelow
+    set splitright
+    \"set clipboard=unnamed
+    \"set clipboard=unnamedplus
+
 
     \"按键管理
+    let mapleader=\" \"
+    nmap <leader>t <Esc>:ter<CR>
+    nmap <leader>s :w<CR>
+    nmap <leader>w :q<CR>
+    
     set tabstop=4		\"设置tab长度为4空格
     map <silent> <C-e> :NERDTreeToggle<CR>	\"将nerdtree插件绑定为	ctrl+e
 
-    \"设置括号自动补全
-    inoremap ( ()<ESC>i
-    inoremap [ []<ESC>i
-    inoremap { {}<ESC>i
-    inoremap < <><ESC>i
-
-    \" C++的编译和运行
+    \" function管理
     map <F5> :call CompileRunGpp()<CR>
+    map <F5> :call RunPython()<CR>
+    
+    \" C++的编译和运行
     func! CompileRunGpp()
-    exec \"w\"
-    exec \"!g++ % -o %<\"
-    exec \"! ./%<\"
+        exec \"w\"
+        exec \"!g++ % -o %<\"
+        exec \"! ./%<\"
     endfunc
+    
+    func! RunPython()
+        exec \"W\"
+        if &filetype == \'python\'
+            exec \"!time python3 %\"
+        endif
+    endfunc    
 
     \"插件管理
-    \"call plug#begin()
+    call plug#begin()
 
-    \"    Plug 'scrooloose/nerdtree'
+        Plug 'scrooloose/nerdtree'
     \"    Plug 'valloric/youcompleteme'
-        
+        \"Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+        Plug 'jiangmiao/auto-pairs'
+        Plug 'vim-airline/vim-airline'
+        Plug 'vim-airline/vim-airline-themes'
+        Plug 'preservim/nerdcommenter'
+        Plug 'mhinz/vim-startify'
+        Plug 'ghifarit53/tokyonight-vim'
+        Plug 'Yggdroot/indentLine'
+        Plug 'preservim/tagbar'
+        Plug 'voldikss/vim-floaterm'
 
-    \"call plug#end()
+
+    call plug#end()
+    
+    
+    \"插件配置
+    \"<ghifarit53/tokyonight-vim>
+    set termguicolors
+    let g:tokyonight_style = 'night' \" available: night, storm
+    let g:tokyonight_enable_italic = 1
+    \"let g:tokyonight_transparent_background = 1 
+    colorscheme tokyonight
+    
+    
+    \"<auto-pairs>
+    au Filetype FILETYPE
+    au FileType php
+    
+    
+    \"<vim-airline>
+    set laststatus=2  \"永远显示状态栏
+    let g:airline_powerline_fonts = 1  \" 支持 powerline 字体
+    let g:airline#extensions#tabline#enabled = 1 \" 显示窗口tab和buffer
+    \"let g:airline_theme='moloai'  \" murmur配色不错
+    if !exists('g:airline_symbols')
+      let g:airline_symbols = {}
+    endif
+    let g:airline_left_sep = '▶'
+    let g:airline_left_alt_sep = '❯'
+    let g:airline_right_sep = '◀'
+    let g:airline_right_alt_sep = '❮'
+    let g:airline_symbols.linenr = '¶'
+    let g:airline_symbols.branch = '⎇'
+    
+
+		\" tabline中当前buffer两端的分隔字符
+		let g:airline#extensions#tabline#left_sep = ' '
+		\" tabline中未激活buffer两端的分隔字符
+		let g:airline#extensions#tabline#left_alt_sep = ' '
+		\" tabline中buffer显示编号
+		let g:airline#extensions#tabline#buffer_nr_show = 1
+		\" 映射<leader>num到num buffer
+		map <leader>1 :b 1<CR>
+		map <leader>2 :b 2<CR>
+		map <leader>3 :b 3<CR>
+		map <leader>4 :b 4<CR>
+		map <leader>5 :b 5<CR>
+		map <leader>6 :b 6<CR>
+		map <leader>7 :b 7<CR>
+		map <leader>8 :b 8<CR>
+		map <leader>9 :b 9<CR>
+    
+    
+
+    
+    
+    "<vim-floatterm> " 设置浮动终端的快捷键
+	  let g:floaterm_keymap_new = '<Leader>tw'     "新建终端。
+    let g:floaterm_keymap_toggle = '<Leader>tt'  "终端显隐。
+    let g:floaterm_keymap_prev = '<Leader>tp'    "上一个终端。
+    let g:floaterm_keymap_next = '<Leader>tn'    "下一个终端。
+    let g:floaterm_keymap_kill = '<Leader>tk'    "关掉终端。
+    let g:floaterm_wintype = 'float'             "浮动窗口类型。
+    let g:floaterm_position = 'center'           "在窗口中间显示。
+    
 
     " > ~/.vimrc 
 }
@@ -294,13 +406,15 @@ Vim_install_neovim() {
     sudo tar xzvf nvim-linux64.tar.gz
     sudo mv nvim-linux64 /usr/local/neovim
     rm -rf nvim-linux64.tar.gz
-    sudo ln -s /usr/local/neovim/bin/nvim /usr/bin/nvim
+    sudo ln -s /usr/local/ne ovim/bin/nvim /usr/bin/nvim
 }
 
 Vim_install_initVim(){
     sudo apt-get install vim
     Vim_Config_vimrc
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    if [ ! -f "~/.vim/autoload/plug.vim"]; then
+        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    fi
 }
 
 Vim_install_LazyVim(){
@@ -491,5 +605,7 @@ main() {
 }
 
 main
+
+
 
 
