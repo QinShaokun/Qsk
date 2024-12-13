@@ -374,14 +374,14 @@ Vim_Config_vimrc(){
 
     
     
-    "<vim-floatterm> " 设置浮动终端的快捷键
-	  let g:floaterm_keymap_new = '<Leader>tw'     "新建终端。
-    let g:floaterm_keymap_toggle = '<Leader>tt'  "终端显隐。
-    let g:floaterm_keymap_prev = '<Leader>tp'    "上一个终端。
-    let g:floaterm_keymap_next = '<Leader>tn'    "下一个终端。
-    let g:floaterm_keymap_kill = '<Leader>tk'    "关掉终端。
-    let g:floaterm_wintype = 'float'             "浮动窗口类型。
-    let g:floaterm_position = 'center'           "在窗口中间显示。
+    \"<vim-floatterm> \" 设置浮动终端的快捷键
+    let g:floaterm_keymap_new = '<Leader>tw'     \"新建终端。
+    let g:floaterm_keymap_toggle = '<Leader>tt'  \"终端显隐。
+    let g:floaterm_keymap_prev = '<Leader>tp'    \"上一个终端。
+    let g:floaterm_keymap_next = '<Leader>tn'    \"下一个终端。
+    let g:floaterm_keymap_kill = '<Leader>tk'    \"关掉终端。
+    let g:floaterm_wintype = 'float'             \"浮动窗口类型。
+    let g:floaterm_position = 'center'           \"在窗口中间显示。
     
 
     " > ~/.vimrc 
